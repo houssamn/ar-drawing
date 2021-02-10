@@ -13,6 +13,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet weak var sceneView: ARSCNView!
     
     let configuration = ARWorldTrackingConfiguration()
+    let pointerNode = SCNNode(geometry: SCNSphere(radius: 0.01))
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,7 +22,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         self.sceneView.showsStatistics = true
         self.sceneView.delegate = self
         
-        // Do any additional setup after loading the view.
+        // Add the main pointer node
+        self.pointerNode.geometry?.firstMaterial?.diffuse.contents = UIColor.blue
+        self.sceneView.scene.rootNode.addChildNode(pointerNode)
     }
 
     @IBOutlet weak var drawButton: UIButton!
@@ -36,16 +39,15 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         let currentPositionOfCamera = orientation + location
         
+        // Update the pointer's position
+        self.pointerNode.position = currentPositionOfCamera
+        
         DispatchQueue.main.async {
             if(self.drawButton.isHighlighted) {
                 let sphereNode = SCNNode(geometry: SCNSphere(radius: 0.02))
                 sphereNode.position = currentPositionOfCamera
                 self.sceneView.scene.rootNode.addChildNode(sphereNode)
                 sphereNode.geometry?.firstMaterial?.diffuse.contents = UIColor.red
-            }else{
-                // let pointer = SCNNode(geometry: SCNSphere(radius: 0.01))
-                // pointer.position = currentPositionOfCamera
-                
             }
         }
         
